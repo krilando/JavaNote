@@ -132,7 +132,7 @@ System.out.print(); //不含\n
 #### 数据类型转换 Type Cast
 - Conversion between numeric types:
   byte < short < int < long < float < double
-- 强制类型转换（高容量到低容量）直接截断，因此精度可能损失
+- 强制类型转换Explicit cast（高容量到低容量downcasting）直接截断，因此精度可能损失
 - 自动类型提升（低到高）自动扩容
 - Type cast operator:
 ```java
@@ -306,7 +306,7 @@ import java.util.ArrayList
    - getClass()：返回对象的类
 
 
-1. 构造器(constructor)
+3. 构造器(constructor)
    A constructor is a special method, with same name as the class name, used for initialisation. (not have a return type, not even void)
    3.1 作用：创建对象
     ```java
@@ -350,6 +350,15 @@ class Person{
     }
 }
 ```
+4. Block 代码块
+  4.1 作用：初始化类、对象
+  4.2 分类： 由于只能用static修饰，所以分为下面两类
+    - 静态代码块：随着类的加载而执行（一次），只能调用静态结构
+      - 作用：初始化类的属性
+    - 非静态代码块：随着对象的创建而执行，所以每创建一个对象就执行一次
+      - 作用：可以在创建对象的时候对对象初始化
+  
+
 
 ##### （二）类的关系 Class Relationships
 1. 关联 Aggregation (写作 has-a)：在一个类中声明另一个类的属性，即Objects are instance variable in the class
@@ -389,6 +398,8 @@ class Person{
 
 #### 二、对象（Object）/实例（Instance）：实际存在的某类事物的某个个体
 - 创建一个对象，变量存放的是该对象在堆中的地址，对象名是引用的对象的地址，因此将一个对象赋给另一个对象后，再改变该对象的属性会导致另一个对象的该属性改变
+- Instance variables are what makes individual object unique
+- 2 objects with the same state are not the same object
 - 内存解析：
 ![](对象内存解析.png)
 ```java
@@ -445,7 +456,8 @@ public class Animal{
 }
 ```
 ### 多态性 Polymorphism
-1. 表现：父类的对象指向子类的引用
+1. 表现：父类的对象指向子类的引用。Using a single definition(superclass) with different types(subclass)
+- the object of subclass can be treated as object of superclass. 
    - 只适用于方法，不适用于属性
    - 是运行时行为
 
@@ -581,19 +593,33 @@ public class Student extends Person{
    - 可以直接用“类.静态方法”调用
    - 静态方法/属性的加载早于对象的实例化，跟着类的加载一起加载，因此静态方法只能调用静态方法/静态属性
    - ⚠ main方法：也是静态方法，为什么能调用非静态方法/属性，是因为在main方法中先实例化了对象，之后通过对象调的。
+3. static代码块（见代码块分类）
+4. static内部类
 
 ### abstract关键字
 1. 抽象类 abstract class：不能被实例化的类，prevent one class from becoming an object instance.
-   - 用于被继承
+   - 用于被继承 The only use it has is in being extended.
    - Abstract method：must be overriden in the subclass
-2. 具象类 Concrete class
-3. 抽象方法：没有方法体
+2. 具象类 Concrete class：就是没有abstract修饰的类
+3. 抽象方法：没有方法体, so the method must be overridden in the child class
    - 必须在抽象类中，但抽象类中不一定有抽象方法
      - 所以非抽象子类中必须重写该方法
    - 应用场景：父类无法定义，于是将该方法设为抽象方法，到具体子类中再重写
 ```java
 public abstract void func();
 ```
+
+### final关键字
+1. final类：不能被继承
+- 比如 String、System、StringBuffer
+2. final方法：不能被override（重写）
+- 比如 Object类中的getClass()
+3. final变量：变成常量
+  3.1 final属性：因为随着类的加载而创建，所以要求此时就被赋值，所以可以显式赋值/代码块中赋值/构造器中赋值
+
+- static final：
+  - 属性：全局常量
+  - 方法
 
 ### MVC设计模式
 ![](MVC设计模式.png)
