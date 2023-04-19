@@ -67,8 +67,66 @@
 ![](保留字.png)
 
 ---
-## 内存
+## 内存相关知识点辨析
 ![](内存解析.png)
+### 堆 Heap
+- Garbage-collectible
+- where objects live
+### 栈 Stack
+- local variables and methods(when called) live
+#### Methods in stack
+- 运行method时压入栈的是：Contains the state of the method (which line of code is executing and values of all local variables).
+- Method at top of the Stack is always the method being executed.
+### Local(/stack) Variables & Instance Variables
+1. local variable:
+   - Variables declared in a method and method parameters. 声明在方法的变量和方法参数
+   - Temporary variables, alive only when the method they belong to is on the Stack. 临时变量（其所在方法被called时）
+2. instance variable：
+   - Variables declared in a class (not inside of a method).
+   - Live inside the object they belong to.
+3. 例子：
+```java
+public class Umamusume{
+    // instance variables:每个赛马娘有一个年龄和名字
+    int age;
+    String name;
+    
+    // food 和 eatSpeed是local variables
+    public void Eat(String food){
+        int eatSpeed = 10;
+    }
+}
+```
+- ==**因此local variables在stack，instance variables在heap**==
+
+### Object References
+1. Object reference (aka non-primitive) variables:
+   - Hold a reference to an object, not the actual object. 大概就是值传递吧（？）
+   - A local variable that is a reference to an object goes on the Stack (the object it refers to still goes on the Heap)
+
+### Life of Objects and Variables
+1. **Life of an Object**: depends only on the life of reference variables referring to it. 取决于其reference variables的寿命
+   - ==Object is alive (or dead) if its reference is alive (or dead).==
+  1.1 Objects的内存分配：dynamically allocated and created on demand
+  - memory space is ==allocated at runtime, not at compile time.==
+  - the new statement causes the memory for an object to be allocated.类似C中的malloc函数
+1. **Variable lifetime**:
+   - same for primitive and reference variables;different for local and instance variables
+  2.1 Life duration：
+     - local variables: live only within the method that declared it (also referred to as being in scope); 和C一样【要区分alive（method被called）和in scope（within the method where it was declared.）
+  ![](LocalVariablesLifeandScope.png)
+     - instance variables: live for as long as object they belong to lives.
+### Garbage Collection（GC）
+1. Memory Leak 内存泄漏：是指程序在申请内存后，无法释放已申请的内存空间，一次内存泄露危害可以忽略，但内存泄露堆积后果很严重，无论多少内存,迟早会被占光。memory leak会最终会导致out of memory！（java通过GC解决了这个问题）
+2. Objects eligible for GC 符合GC条件的objects（定期清理）：If an object has only one reference to it and the Stack frame holding it gets popped off the Stack, then the object is now abandoned in the Heap. 其实就是没有引用了？
+3. Object没有reference的方式：
+  ① The reference goes out of scope, permanently.
+  ② The reference is assigned to another object.
+  ③ The reference is explicitly set to null.
+     - ==⚠== If you use the dot operator on a null reference, you will get a NullPointerException error at runtime.
+     - instance reference variables没有初始化时是null
+
+- finalizer: 与constructor相反，有时用于cleanup of an object.
 ---
 ## Java基础语法 Java Syntax
 ⚠在此只记录与C不同的语法
@@ -321,7 +379,9 @@ import java.util.ArrayList
     3.2 构造器的定义：如果没有显式的定义，系统自动提供空参构造器
     - 多个构造器彼此重载
     - 只要显式定义了，系统就不再提供默认空参构造器
-  
+    3.3 Constructor Chaining: 子类的构造器在调用时会调用父类的构造器（最后倒到Object类）
+    - An object is only completely formed when all the superclass parts of itself are formed.
+  ![](ConstructorChaining.png)
 ```java
 
 Person p = new Person("Bill");
@@ -350,7 +410,7 @@ class Person{
     }
 }
 ```
-4. Block 代码块
+1. Block 代码块
   4.1 作用：初始化类、对象
   4.2 分类： 由于只能用static修饰，所以分为下面两类
     - 静态代码块：随着类的加载而执行（一次），只能调用静态结构
@@ -481,10 +541,96 @@ public class Test{
     }
 }
 ```
-1. 使用：虚拟方法调用
+2. 使用：虚拟方法调用
    - 在编译时只能调用父类中声明的方法，但在实际运行时运行的是子类重写的方法。
    - 虚拟方法：此时父类的方法
+3. 接口体现多态性：由于接口不能实例化，所以要想使用接口，必须涉及多态性的体现
 
+### 接口 Interface
+1. 作用：由于Java不支持多重继承（即一个类只能继承一个父类），所以提出接口来实现多重继承的效果
+从几个类中派生出一个子类/从几个类中抽取一些共同的行为特征（但他们之间没有继承关系，仅仅是具有相同的行为特征而已，例如：鼠标、键盘、移动硬盘都支持USB连接）
+   - ==接口和类是并列的结构==
+2. 定义：
+```java
+interface Flyable{
+    // 全局常量
+    public static final int MAX_SPEED = 7000;
+    // 抽象方法
+    public abstract void fly();
+}
+class Plane implements Flyable{
+    public void fly(){
+        System.out.println("起飞");
+    }
+}
+```
+- JDK7及以前，接口内部只能定义全局常量和抽象方法
+- JDK8，还可以定义静态方法、默认方法
+- 不能定义构造器（即不能实例化）
+- 类通过implements来使用接口，成为实现类
+- 实现类需要实现（就是重写，但重写抽象方法叫做实现）接口中的所有抽象方法才可以实例化
+- 继承+实现：
+  ```java
+  class A extends B implements C,D,E,...{
+  }
+  ```
+- 接口间可以多继承
+- 与抽象类的相同点：都不能被实例化
+- 匿名使用的四种情况
+```java
+public class Test{
+    public static void main(String[] args){
+        Computer computer = new Computer();
+        // 由于接口不能实例化，所以必须造一个USB接口的实现类的对象（体现多态）
+        // 1. 创建接口的非匿名实现类的非匿名对象
+        Flash flash = new Flash();
+        computer.transferData(flash);
+        
+        // 2. 创建接口的非匿名实现类的匿名对象
+        computer.transferData(new Printer());
+
+        // 3. 创建接口的匿名实现类的非匿名对象
+        USB phone = new USB(){
+            public void start(){
+                System.out.println("手机工作");
+            }
+        };
+        computer.transferData(phone);
+
+        // 4. 创建接口的匿名实现类的匿名对象
+        computer.transferData(new USB(){
+            public void start(){
+                System.out.println("mp3工作");
+            }
+        });
+    }
+}
+
+class Computer{
+    // USB接口规范了如果想要调用电脑传输数据，则只有USB接口的实现类才可以传输
+    public void transferData(USB usb){
+        usb.start();
+    }
+}
+
+interface USB{
+    void start();
+}
+
+class Flash implements USB{
+    public void start(){
+        System.out.println("U盘工作");
+    }
+}
+
+class Printer implements USB{
+    public void start(){
+        System.out.println("打印机工作");
+    }
+}
+
+```
+---
 ### JavaBean
 1. 定义：满足以下条件的Java类：
    - public
@@ -503,7 +649,7 @@ public class Person{
     }
 }
 ```
-2. this调用构造器：在类的构造器中，可以通过“this(形参列表)”调用本类中其他构造器。每个构造器最多只能调一个
+1. this调用构造器：在类的构造器中，可以通过“this(形参列表)”调用本类中其他构造器。每个构造器最多只能调一个
 ```java
 public class Person{
     private String name;
@@ -624,5 +770,7 @@ public abstract void func();
 ### MVC设计模式
 ![](MVC设计模式.png)
 
-
-288
+---
+## 设计模式
+优选出的代码结构、编程风格以及解决问题的思考方法
+### 单例
