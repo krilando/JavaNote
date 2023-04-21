@@ -110,7 +110,7 @@ public class Umamusume{
   1.1 Objects的内存分配：dynamically allocated and created on demand
   - memory space is ==allocated at runtime, not at compile time.==
   - the new statement causes the memory for an object to be allocated.类似C中的malloc函数
-1. **Variable lifetime**:
+2. **Variable lifetime**:
    - same for primitive and reference variables;different for local and instance variables
   2.1 Life duration：
      - local variables: live only within the method that declared it (also referred to as being in scope); 和C一样【要区分alive（method被called）和in scope（within the method where it was declared.）
@@ -118,7 +118,7 @@ public class Umamusume{
      - instance variables: live for as long as object they belong to lives.
 ### Garbage Collection（GC）
 1. Memory Leak 内存泄漏：是指程序在申请内存后，无法释放已申请的内存空间，一次内存泄露危害可以忽略，但内存泄露堆积后果很严重，无论多少内存,迟早会被占光。memory leak会最终会导致out of memory！（java通过GC解决了这个问题）
-2. Objects eligible for GC 符合GC条件的objects（定期清理）：If an object has only one reference to it and the Stack frame holding it gets popped off the Stack, then the object is now abandoned in the Heap. 其实就是没有引用了？
+2. Objects eligible for GC 符合GC条件的objects（定期清理）：If an object has only one reference to it and the Stack frame holding it gets popped off the Stack, then the object is now abandoned in the Heap. 其实就是没有引用了
 3. Object没有reference的方式：
   ① The reference goes out of scope, permanently.
   ② The reference is assigned to another object.
@@ -178,12 +178,12 @@ System.out.print(); //不含\n
    ```   
 3. 字符：char
   - 若直接使用Unicode值来表示char：前面加'\u'
-1. 布尔：boolean
+4. 布尔：boolean
 ⚠ 不同于C的是，布尔类型不存在0代表false，1代表true
 #### 引用数据类型（Reference type）
 1. class（string属于class）
 - String类型：+表示连接操作
-##### 1) String Class
+#### 1) String Class
 strings不是基本类型，是objects
 - delimited by double quote marks
 1. ==Immutable(can't be changed)==: **constant strings**, for security purposes and to minimize memory usage
@@ -220,20 +220,20 @@ strings不是基本类型，是objects
 ![](MethodsInString3.png)
 ![](MethodsInString4.png)
 ![](MethodsInString5.png)
-##### 2) StringBuffer Class
+#### 2) StringBuffer Class
 由于前面所述的String类immutable，所以有了StringBuffer Class，used for **variable strings**
-##### 3) StringBuilder Class
+#### 3) StringBuilder Class
 功能同StringBuffer
 ![](StringBuilder.png)
-##### 4) StringTokenizer Class
+#### 4) StringTokenizer Class
 已经被String.split()淘汰
 ![](StringTokenizerClass.png)
 ![](StringTokenizerConstructor.png)
-##### 5) Scanner Class
+#### 5) Scanner Class
 也是用于切割，可以根据字符串切割
 ![](ScannerClass.png)
 ![](Scanner其他作业以及和String中split的区别.png)
-##### 6) Character Class
+#### 6) Character Class
 The Character class is a Wrapper class for a single character, and belongs to the java.lang package. characer的包装类
 ![](CharacterClass.png)
 
@@ -623,6 +623,7 @@ class Plane implements Flyable{
 - 不能定义构造器（即不能实例化）
 - 类通过implements来使用接口，成为实现类
 - 实现类需要实现（就是重写，但重写抽象方法叫做实现）接口中的所有抽象方法才可以实例化
+- 不能用private修饰
 - 继承+实现：
   ```java
   class A extends B implements C,D,E,...{
@@ -836,7 +837,7 @@ public abstract void func();
 
 ---
 ### Wrapper Class 包装类
-将一个基础类型的变量当作对象使用
+将一个基础类型的变量当作类使用，声明一个基础类型的变量就等价于一个对象
 ![](WrapperClass.png)
 1. 使用范围：
    - Method Arguments
