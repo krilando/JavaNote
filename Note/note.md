@@ -182,7 +182,62 @@ System.out.print(); //不含\n
 ⚠ 不同于C的是，布尔类型不存在0代表false，1代表true
 #### 引用数据类型（Reference type）
 1. class（string属于class）
-   - String类型：+表示连接操作
+- String类型：+表示连接操作
+##### 1) String Class
+strings不是基本类型，是objects
+- delimited by double quote marks
+1. ==Immutable(can't be changed)==: **constant strings**, for security purposes and to minimize memory usage
+     - 理解：更改的是引用的地址，比如创建字符串str="a"，再修改str="b"，此时并不是将a改为b，而是又在堆内存中创建了b，让栈中的str指向b，也就是说a还是存在的，因此如果过多修改可能导致内存爆掉。
+  ![](字符串不可修改的理解.png)
+     - 例子：**区别两种情况**
+    ```java
+    public class StringImmutableTest{
+        private String name;
+        public static void main(String[] args){
+            StringImmutableTest x1 = new StringImmutableTest();
+            x1.setName("Bill");
+            StringImmutableTest x2 = x1; //x2和x1指向一个对象，所以后续修改x2指向的对象（对象内部字符串）等价于修改x1指向的对象
+            x2.setName("Tom");
+            System.out.println(x1.name); //Tom
+            System.out.println(x2.name); //Tom
+    
+            String s1 = "Hello";
+            String s2 = s1; //s2为新的变量，一开始和s1一起指向“Hello”
+            s2 = "World"; //在堆中创建“World”，s2更改为指向它
+            System.out.println(s1); //Hello
+            System.out.println(s2); //World
+        }
+    
+        public void setName(String name){
+            this.name = name;
+        }
+    }
+    ```
+- 存放在**String Pool**（GC不清理）中
+2. 一些methods
+![](MethodsInString1.png)
+![](MethodsInString2.png)
+![](MethodsInString3.png)
+![](MethodsInString4.png)
+![](MethodsInString5.png)
+##### 2) StringBuffer Class
+由于前面所述的String类immutable，所以有了StringBuffer Class，used for **variable strings**
+##### 3) StringBuilder Class
+功能同StringBuffer
+![](StringBuilder.png)
+##### 4) StringTokenizer Class
+已经被String.split()淘汰
+![](StringTokenizerClass.png)
+![](StringTokenizerConstructor.png)
+##### 5) Scanner Class
+也是用于切割，可以根据字符串切割
+![](ScannerClass.png)
+![](Scanner其他作业以及和String中split的区别.png)
+##### 6) Character Class
+The Character class is a Wrapper class for a single character, and belongs to the java.lang package. characer的包装类
+![](CharacterClass.png)
+
+
 2. 接口 interface
 3. 数组[]
 4. object: 默认是null
@@ -213,8 +268,6 @@ Person p = (Person)obj;
 // 父类创子类转子类
 Person p = new Woman();
 Woman w = (Woman)p;
-
-
 ```
 
 ### 运算符
@@ -279,6 +332,7 @@ import java.util.ArrayList
 ![](数组和数组列表.png)
 ![](数组和数组列表2.png)
 
+---
 ## Java面向对象
 ### OO Programming and Object
 1. Object-Oriented(OO) programming: Constructing software systems which are structured collections of classes.
@@ -649,7 +703,7 @@ public class Person{
     }
 }
 ```
-1. this调用构造器：在类的构造器中，可以通过“this(形参列表)”调用本类中其他构造器。每个构造器最多只能调一个
+2. this调用构造器：在类的构造器中，可以通过“this(形参列表)”调用本类中其他构造器。每个构造器最多只能调一个
 ```java
 public class Person{
     private String name;
@@ -737,10 +791,15 @@ public class Student extends Person{
 ![](静态属性内存演示.png)
 2. static方法
    - 可以直接用“类.静态方法”调用
-   - 静态方法/属性的加载早于对象的实例化，跟着类的加载一起加载，因此静态方法只能调用静态方法/静态属性
+   - 静态方法/属性的加载早于对象的实例化，跟着类的加载一起加载，因此静态方法只能调用静态方法/静态属性 Static methods can only reference static variables!
    - ⚠ main方法：也是静态方法，为什么能调用非静态方法/属性，是因为在main方法中先实例化了对象，之后通过对象调的。
 3. static代码块（见代码块分类）
+利用static代码块实现对常量的初始化：
+![](StaticInitialiser.png)
 4. static内部类
+5. 其他
+- Static Imports
+![](StaticImport.png)
 
 ### abstract关键字
 1. 抽象类 abstract class：不能被实例化的类，prevent one class from becoming an object instance.
@@ -774,3 +833,27 @@ public abstract void func();
 ## 设计模式
 优选出的代码结构、编程风格以及解决问题的思考方法
 ### 单例
+
+---
+### Wrapper Class 包装类
+将一个基础类型的变量当作对象使用
+![](WrapperClass.png)
+1. 使用范围：
+   - Method Arguments
+   - Return Values
+  ```java
+  int giveNumber(Integer i){
+      return i
+  }
+  ```
+   - Boolean Expression：布尔类型可以直接用于判断条件
+   - Operations on Numbers
+   - Assignments
+![](WrapperClass1.png)
+![](WrapperClass2.png)
+### Autoboxing and Unboxing 自动装箱和拆箱
+1. Autoboxing（from Java5.0）：automatic wrapping. conversion from primitive type to wrapper object is automatic
+
+---
+### The Format Specifier
+![](FormatSpecifier.png)
